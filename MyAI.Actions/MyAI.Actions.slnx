@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../MyAI.WpfUI/MyAI.WpfUI.csproj" />
+  <Project Path="MyAI.Actions.csproj" />
+</Solution>

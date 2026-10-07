@@ -1,0 +1,35 @@
+﻿<Window x:Class="MyAI.WpfUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyAI.WpfUI"
+        mc:Ignorable="d"
+        Title="File Finder" Height="650" Width="1000">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,16" FontSize="22" FontWeight="SemiBold" Text="File Finder" />
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Search location:" />
+        <TextBox x:Name="SearchLocationTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" ToolTip="Folder to search, including all its subfolders." />
+        <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="File name contains:" />
+        <TextBox x:Name="NameTermsTextBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" ToolTip="Use commas, semicolons, or new lines for alternatives. Example: ZYX, XYZ" />
+        <TextBlock Grid.Row="3" VerticalAlignment="Center" Text="File extensions:" />
+        <TextBox x:Name="ExtensionsTextBox" Grid.Row="3" Grid.Column="1" Margin="0,0,0,12" ToolTip="Use commas, semicolons, or new lines for alternatives. Example: pdf, docx" />
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,12">
+            <Button x:Name="SearchButton" Width="100" Padding="8,4" Click="SearchButton_Click" Content="Search" />
+            <TextBlock x:Name="StatusTextBlock" Margin="12,5,0,0" VerticalAlignment="Center" />
+        </StackPanel>
+        <ListView x:Name="ResultsListView" Grid.Row="5" Grid.ColumnSpan="2" MouseDoubleClick="ResultsListView_MouseDoubleClick">
+            <ListView.View><GridView>
+                <GridViewColumn Header="File name" Width="230" DisplayMemberBinding="{Binding Name}" />
+                <GridViewColumn Header="Path" Width="540" DisplayMemberBinding="{Binding FullPath}" />
+                <GridViewColumn Header="Modified" Width="145" DisplayMemberBinding="{Binding LastWriteTime}" />
+            </GridView></ListView.View>
+            <ListView.ContextMenu><ContextMenu><MenuItem Header="Show in Explorer" Click="ShowInExplorer_Click" /></ContextMenu></ListView.ContextMenu>
+        </ListView>
+    </Grid>
+</Window>
