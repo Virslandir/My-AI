@@ -11,15 +11,16 @@ public sealed class FileSearchService
 
     private static FileSearchResponse Search(FileSearchQuery query, CancellationToken cancellationToken)
     {
-        if (!Directory.Exists(query.SearchRoot))
+        var missingLocation = query.SearchRoots.FirstOrDefault(location => !Directory.Exists(location));
+        if (missingLocation is not null)
         {
-            throw new DirectoryNotFoundException($"The search location does not exist: {query.SearchRoot}");
+            throw new DirectoryNotFoundException($"The search location does not exist: {missingLocation}");
         }
 
         var files = new List<FileSearchResult>();
         var skippedFolders = 0;
         var directories = new Stack<string>();
-        directories.Push(query.SearchRoot);
+        foreach (var searchRoot in query.SearchRoots) directories.Push(searchRoot);
 
         while (directories.Count > 0)
         {
@@ -45,7 +46,8 @@ public sealed class FileSearchService
             catch (IOException) { skippedFolders++; }
         }
 
-        return new(files.OrderBy(file => file.Name, StringComparer.OrdinalIgnoreCase).ToArray(), skippedFolders);
+        return new(files.DistinctBy(file => file.FullPath, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(file => file.Name, StringComparer.OrdinalIgnoreCase).ToArray(), skippedFolders);
     }
 }
 

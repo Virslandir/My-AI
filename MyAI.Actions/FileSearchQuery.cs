@@ -3,19 +3,25 @@ namespace MyAI.Actions;
 /// <summary>The criteria used to locate files. Name and extension alternatives are combined with AND.</summary>
 public sealed class FileSearchQuery
 {
-    public FileSearchQuery(string searchRoot, IEnumerable<string>? nameTerms, IEnumerable<string>? extensions)
+    public FileSearchQuery(IEnumerable<string>? searchRoots, IEnumerable<string>? nameTerms, IEnumerable<string>? extensions)
     {
-        if (string.IsNullOrWhiteSpace(searchRoot))
+        SearchRoots = (searchRoots ?? [])
+            .Select(location => location.Trim())
+            .Where(location => location.Length > 0)
+            .Select(Path.GetFullPath)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (SearchRoots.Count == 0)
         {
-            throw new ArgumentException("A search location is required.", nameof(searchRoot));
+            throw new ArgumentException("At least one search location is required.", nameof(searchRoots));
         }
 
-        SearchRoot = Path.GetFullPath(searchRoot.Trim());
         NameTerms = Normalize(nameTerms, false);
         Extensions = Normalize(extensions, true);
     }
 
-    public string SearchRoot { get; }
+    public IReadOnlyList<string> SearchRoots { get; }
     public IReadOnlyList<string> NameTerms { get; }
     public IReadOnlyList<string> Extensions { get; }
 
