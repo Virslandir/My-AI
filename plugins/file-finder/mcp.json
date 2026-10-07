@@ -3,9 +3,9 @@
   "mcpServers": {
     "filefinder": {
       "type": "stdio",
-      "command": ".\\bin\\FileFinder.McpServer.exe",
+      "command": "./bin/FileFinder.McpServer.exe",
       "args": [],
-      "cwd": "."
+      "cwd": "./"
     }
   }
 }

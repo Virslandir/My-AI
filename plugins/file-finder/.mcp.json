@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "filefinder": {
-      "command": ".\\bin\\FileFinder.McpServer.exe",
+      "command": "./bin/FileFinder.McpServer.exe",
       "args": [],
       "cwd": ".",
       "enabled": true,
