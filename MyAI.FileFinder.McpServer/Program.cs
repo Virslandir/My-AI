@@ -98,7 +98,7 @@ internal sealed class FileFinderMcpServer
             type = "object",
             properties = new
             {
-                locations = new { type = "array", items = new { type = "string" }, description = "Optional folders to search. Each must be within a configured allowed root." },
+                locations = new { type = "array", items = new { type = "string" }, description = "Optional folders to search. Each must be within a configured allowed root and cannot be a junction or symbolic link." },
                 nameTerms = new { type = "array", items = new { type = "string" }, description = "Filename text alternatives. A file matches when it contains any supplied term." },
                 extensions = new { type = "array", items = new { type = "string" }, description = "Extension alternatives, with or without a leading period." },
                 page = new { type = "integer", minimum = 1, defaultValue = 1 },
@@ -147,7 +147,7 @@ internal sealed class FileFinderMcpServer
                 throw new ArgumentException("Provide at least one nameTerms or extensions value.");
             }
 
-            var searchLocations = locations.Count == 0 ? _allowedRoots : ValidateLocations(locations);
+            var searchLocations = locations.Count == 0 ? ValidateConfiguredRoots() : ValidateLocations(locations);
             var query = new FileSearchQuery(searchLocations, nameTerms, extensions);
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             var response = await _searchService.SearchAsync(query, MaximumSearchResults, timeout.Token);
@@ -180,13 +180,26 @@ internal sealed class FileFinderMcpServer
         var normalizedLocations = locations.Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         foreach (var location in normalizedLocations)
         {
-            if (!_allowedRoots.Any(allowedRoot => IsWithin(location, allowedRoot)))
+            var allowedRoot = _allowedRoots.FirstOrDefault(allowedRoot => IsWithin(location, allowedRoot));
+            if (allowedRoot is null)
             {
                 throw new ArgumentException($"The location '{location}' is not within an allowed root. Allowed roots: {string.Join(", ", _allowedRoots)}");
             }
+
+            RejectReparsePoints(allowedRoot, location);
         }
 
         return normalizedLocations;
+    }
+
+    private IReadOnlyList<string> ValidateConfiguredRoots()
+    {
+        foreach (var allowedRoot in _allowedRoots)
+        {
+            RejectReparsePoints(allowedRoot, allowedRoot);
+        }
+
+        return _allowedRoots;
     }
 
     private static bool IsWithin(string path, string root)
@@ -195,6 +208,29 @@ internal sealed class FileFinderMcpServer
         var normalizedPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
         return string.Equals(normalizedPath, normalizedRoot, StringComparison.OrdinalIgnoreCase) ||
             normalizedPath.StartsWith(normalizedRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void RejectReparsePoints(string allowedRoot, string location)
+    {
+        var currentPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(allowedRoot));
+        RejectReparsePoint(currentPath);
+
+        var relativePath = Path.GetRelativePath(currentPath, location);
+        if (relativePath == ".") return;
+
+        foreach (var component in relativePath.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar], StringSplitOptions.RemoveEmptyEntries))
+        {
+            currentPath = Path.Combine(currentPath, component);
+            RejectReparsePoint(currentPath);
+        }
+    }
+
+    private static void RejectReparsePoint(string path)
+    {
+        if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+        {
+            throw new ArgumentException($"The search location '{path}' is a reparse point (such as a junction or symbolic link), which is not allowed.");
+        }
     }
 
     private static IReadOnlyList<string> GetAllowedRoots()

@@ -22,6 +22,12 @@ public sealed class FileSearchService
             throw new DirectoryNotFoundException($"The search location does not exist: {missingLocation}");
         }
 
+        var reparsePointRoot = query.SearchRoots.FirstOrDefault(location => (File.GetAttributes(location) & FileAttributes.ReparsePoint) != 0);
+        if (reparsePointRoot is not null)
+        {
+            throw new ArgumentException($"The search location '{reparsePointRoot}' is a reparse point (such as a junction or symbolic link), which is not allowed.", nameof(query));
+        }
+
         var files = new List<FileSearchResult>();
         var skippedFolders = 0;
         var directories = new Stack<string>();

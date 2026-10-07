@@ -10,7 +10,7 @@ By default, searches are limited to the current Windows user's profile directory
 $env:FILE_FINDER_ALLOWED_ROOTS = "C:\Users\YourName;D:\Archive"
 ```
 
-Restart Codex after changing the environment variable. A requested location must be inside an allowed root.
+Restart Codex after changing the environment variable. A requested location must be inside an allowed root. Configured roots and requested locations cannot be Windows reparse points (for example, junctions or symbolic links), and the search skips reparse-point subfolders.
 
 ## Limits
 
