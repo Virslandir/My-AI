@@ -83,7 +83,7 @@ internal sealed class FileFinderMcpServer
         {
             protocolVersion,
             capabilities = new { tools = new { listChanged = false } },
-            serverInfo = new { name = "FileFinder", version = "1.0.0" },
+            serverInfo = new { name = "FileFinder", version = "1.0.1" },
             instructions = "Use search_files only to locate file paths in configured local folders. It does not read file contents or modify files."
         };
     }

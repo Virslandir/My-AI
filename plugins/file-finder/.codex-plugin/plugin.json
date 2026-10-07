@@ -1,6 +1,6 @@
 {
   "name": "file-finder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Search configured local Windows folders and return structured file paths.",
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",

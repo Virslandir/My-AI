@@ -1,0 +1,17 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "file-finder",
+  "version": "1.0.1",
+  "description": "Search configured local Windows folders and return structured file paths.",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "FileFinder",
+        "shortDescription": "Search local files by name and extension.",
+        "defaultPrompt": "Search my local files by name and extension.",
+        "composerIcon": "./assets/filefinder.png",
+        "logo": "./assets/filefinder.png"
+      }
+    }
+  }
+}

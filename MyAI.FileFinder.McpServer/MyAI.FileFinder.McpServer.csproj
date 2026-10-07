@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>FileFinder.McpServer</AssemblyName>
+    <Version>1.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyAI.Actions\MyAI.Actions.csproj" />
