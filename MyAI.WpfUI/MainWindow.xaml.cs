@@ -44,7 +44,7 @@ public partial class MainWindow : Window
                 return;
             }
             _searchCancellation = new CancellationTokenSource();
-            var response = await _searchService.SearchAsync(query, _searchCancellation.Token);
+            var response = await _searchService.SearchAsync(query, cancellationToken: _searchCancellation.Token);
             ResultsListView.ItemsSource = response.Files;
             StatusTextBlock.Text = response.SkippedFolderCount == 0
                 ? $"{response.Files.Count:N0} file(s) found. Double-click a result to show it in Explorer."

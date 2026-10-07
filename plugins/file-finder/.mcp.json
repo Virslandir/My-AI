@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "filefinder": {
+      "command": "cmd.exe",
+      "args": [
+        "/d",
+        "/s",
+        "/c",
+        "\".\\bin\\FileFinder.McpServer.exe\""
+      ],
+      "cwd": ".",
+      "enabled": true,
+      "enabled_tools": [
+        "search_files"
+      ],
+      "startup_timeout_sec": 60
+    }
+  }
+}

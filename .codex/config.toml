@@ -1,0 +1,15 @@
+[mcp_servers.filefinder]
+command = "dotnet"
+args = ["run", "--project", "MyAI.FileFinder.McpServer"]
+cwd = "."
+enabled = true
+default_tools_approval_mode = "approve"
+enabled_tools = ["search_files"]
+
+[plugins."file-finder@myai-local"]
+enabled = true
+
+[plugins."file-finder@myai-local".mcp_servers.filefinder]
+enabled = true
+default_tools_approval_mode = "approve"
+enabled_tools = ["search_files"]

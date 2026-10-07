@@ -1,0 +1,14 @@
+{
+  "name": "file-finder",
+  "version": "1.0.0",
+  "description": "Search configured local Windows folders and return structured file paths.",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "FileFinder",
+    "shortDescription": "Search local files by name and extension.",
+    "defaultPrompt": "Search my local files by name and extension.",
+    "composerIcon": "./assets/filefinder.png",
+    "logo": "./assets/filefinder.png"
+  }
+}
