@@ -27,9 +27,15 @@
         </StackPanel>
         <ListView x:Name="ResultsListView" Grid.Row="5" Grid.ColumnSpan="3" MouseDoubleClick="ResultsListView_MouseDoubleClick">
             <ListView.View><GridView>
-                <GridViewColumn Header="File name" Width="230" DisplayMemberBinding="{Binding Name}" />
-                <GridViewColumn Header="Path" Width="540" DisplayMemberBinding="{Binding FullPath}" />
-                <GridViewColumn Header="Modified" Width="145" DisplayMemberBinding="{Binding LastWriteTime}" />
+                <GridViewColumn Width="230" DisplayMemberBinding="{Binding Name}">
+                    <GridViewColumn.Header><GridViewColumnHeader Tag="Name" Content="File name" Click="ResultsColumnHeader_Click" /></GridViewColumn.Header>
+                </GridViewColumn>
+                <GridViewColumn Width="540" DisplayMemberBinding="{Binding FullPath}">
+                    <GridViewColumn.Header><GridViewColumnHeader Tag="FullPath" Content="Path" Click="ResultsColumnHeader_Click" /></GridViewColumn.Header>
+                </GridViewColumn>
+                <GridViewColumn Width="145" DisplayMemberBinding="{Binding LastWriteTime}">
+                    <GridViewColumn.Header><GridViewColumnHeader Tag="LastWriteTime" Content="Modified" Click="ResultsColumnHeader_Click" /></GridViewColumn.Header>
+                </GridViewColumn>
             </GridView></ListView.View>
             <ListView.ContextMenu><ContextMenu><MenuItem Header="Show in Explorer" Click="ShowInExplorer_Click" /></ContextMenu></ListView.ContextMenu>
         </ListView>

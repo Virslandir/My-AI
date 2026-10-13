@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
 using MyAI.Actions;
 using Microsoft.Win32;
 
@@ -19,6 +20,9 @@ public partial class MainWindow : Window
 {
     private readonly FileSearchService _searchService = new();
     private CancellationTokenSource? _searchCancellation;
+    private ICollectionView? _resultsView;
+    private string? _sortProperty;
+    private ListSortDirection _sortDirection = ListSortDirection.Ascending;
 
     public MainWindow()
     {
@@ -45,7 +49,11 @@ public partial class MainWindow : Window
             }
             _searchCancellation = new CancellationTokenSource();
             var response = await _searchService.SearchAsync(query, cancellationToken: _searchCancellation.Token);
-            ResultsListView.ItemsSource = response.Files;
+            _resultsView = CollectionViewSource.GetDefaultView(response.Files);
+            _resultsView.SortDescriptions.Add(new SortDescription(nameof(FileSearchResult.Name), ListSortDirection.Ascending));
+            _sortProperty = nameof(FileSearchResult.Name);
+            _sortDirection = ListSortDirection.Ascending;
+            ResultsListView.ItemsSource = _resultsView;
             StatusTextBlock.Text = response.SkippedFolderCount == 0
                 ? $"{response.Files.Count:N0} file(s) found. Double-click a result to show it in Explorer."
                 : $"{response.Files.Count:N0} file(s) found. {response.SkippedFolderCount:N0} inaccessible folder(s) skipped.";
@@ -69,6 +77,21 @@ public partial class MainWindow : Window
     }
 
     private void AbortButton_Click(object sender, RoutedEventArgs e) => _searchCancellation?.Cancel();
+
+    private void ResultsColumnHeader_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not GridViewColumnHeader { Tag: string property }) return;
+
+        _sortDirection = _sortProperty == property && _sortDirection == ListSortDirection.Ascending
+            ? ListSortDirection.Descending
+            : ListSortDirection.Ascending;
+        _sortProperty = property;
+
+        if (_resultsView is null) return;
+
+        _resultsView.SortDescriptions.Clear();
+        _resultsView.SortDescriptions.Add(new SortDescription(property, _sortDirection));
+    }
 
     private void BrowseButton_Click(object sender, RoutedEventArgs e)
     {
