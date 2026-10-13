@@ -118,7 +118,7 @@ public partial class MainWindow : Window
 
     private void ConfigureColumnFilters(IEnumerable<FileSearchResult> files)
     {
-        foreach (var property in new[] { nameof(FileSearchResult.Name), nameof(FileSearchResult.FullPath), nameof(FileSearchResult.LastWriteTime) })
+        foreach (var property in new[] { nameof(FileSearchResult.Name), nameof(FileSearchResult.DirectoryPath), nameof(FileSearchResult.LastWriteTime) })
         {
             var values = files.Select(file => GetColumnValue(file, property))
                 .Distinct(StringComparer.CurrentCultureIgnoreCase)
@@ -191,7 +191,7 @@ public partial class MainWindow : Window
     private static string GetColumnValue(FileSearchResult file, string property) => property switch
     {
         nameof(FileSearchResult.Name) => file.Name,
-        nameof(FileSearchResult.FullPath) => file.FullPath,
+        nameof(FileSearchResult.DirectoryPath) => file.DirectoryPath,
         nameof(FileSearchResult.LastWriteTime) => file.LastWriteTime.ToString(),
         _ => string.Empty
     };

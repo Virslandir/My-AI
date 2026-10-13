@@ -37,12 +37,12 @@
                         </GridViewColumnHeader>
                     </GridViewColumn.Header>
                 </GridViewColumn>
-                <GridViewColumn Width="540" DisplayMemberBinding="{Binding FullPath}">
+                <GridViewColumn Width="540" DisplayMemberBinding="{Binding DirectoryPath}">
                     <GridViewColumn.Header>
-                        <GridViewColumnHeader Tag="FullPath" Click="ResultsColumnHeader_Click">
+                        <GridViewColumnHeader Tag="DirectoryPath" Click="ResultsColumnHeader_Click">
                             <Grid Width="530"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="22" /></Grid.ColumnDefinitions>
                             <TextBlock VerticalAlignment="Center" Text="Path" />
-                            <Button Grid.Column="1" Tag="FullPath" Padding="0" ToolTip="Filter paths" Click="FilterButton_Click" Content="Y" />
+                            <Button Grid.Column="1" Tag="DirectoryPath" Padding="0" ToolTip="Filter paths" Click="FilterButton_Click" Content="Y" />
                             </Grid>
                         </GridViewColumnHeader>
                     </GridViewColumn.Header>
