@@ -32,7 +32,7 @@
                         <GridViewColumnHeader Tag="Name" Click="ResultsColumnHeader_Click">
                             <Grid Width="220"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="22" /></Grid.ColumnDefinitions>
                             <TextBlock VerticalAlignment="Center" Text="File name" />
-                            <Button Grid.Column="1" Tag="Name" Padding="0" ToolTip="Filter file names" Click="FilterButton_Click" Content="Y" />
+                            <Button x:Name="FileNameFilterButton" Grid.Column="1" Tag="Name" Padding="0" ToolTip="Filter file names" Click="FilterButton_Click" Content="Y" />
                             </Grid>
                         </GridViewColumnHeader>
                     </GridViewColumn.Header>
@@ -42,7 +42,7 @@
                         <GridViewColumnHeader Tag="DirectoryPath" Click="ResultsColumnHeader_Click">
                             <Grid Width="530"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="22" /></Grid.ColumnDefinitions>
                             <TextBlock VerticalAlignment="Center" Text="Path" />
-                            <Button Grid.Column="1" Tag="DirectoryPath" Padding="0" ToolTip="Filter paths" Click="FilterButton_Click" Content="Y" />
+                            <Button x:Name="PathFilterButton" Grid.Column="1" Tag="DirectoryPath" Padding="0" ToolTip="Filter paths" Click="FilterButton_Click" Content="Y" />
                             </Grid>
                         </GridViewColumnHeader>
                     </GridViewColumn.Header>
@@ -52,7 +52,7 @@
                         <GridViewColumnHeader Tag="LastWriteTime" Click="ResultsColumnHeader_Click">
                             <Grid Width="135"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="22" /></Grid.ColumnDefinitions>
                             <TextBlock VerticalAlignment="Center" Text="Modified" />
-                            <Button Grid.Column="1" Tag="LastWriteTime" Padding="0" ToolTip="Filter modified dates" Click="FilterButton_Click" Content="Y" />
+                            <Button x:Name="ModifiedFilterButton" Grid.Column="1" Tag="LastWriteTime" Padding="0" ToolTip="Filter modified dates" Click="FilterButton_Click" Content="Y" />
                             </Grid>
                         </GridViewColumnHeader>
                     </GridViewColumn.Header>

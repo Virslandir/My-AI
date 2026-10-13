@@ -126,6 +126,7 @@ public partial class MainWindow : Window
                 .ToList();
             _columnValues[property] = values;
             _selectedColumnValues[property] = new HashSet<string>(values, StringComparer.CurrentCultureIgnoreCase);
+            UpdateFilterButtonState(property);
         }
     }
 
@@ -185,7 +186,27 @@ public partial class MainWindow : Window
         }
 
         _resultsView?.Refresh();
+        UpdateFilterButtonState(option.Property);
         PopulateFilterTree();
+    }
+
+    private void UpdateFilterButtonState(string property)
+    {
+        if (!_columnValues.TryGetValue(property, out var values) || !_selectedColumnValues.TryGetValue(property, out var selectedValues)) return;
+
+        var button = property switch
+        {
+            nameof(FileSearchResult.Name) => FileNameFilterButton,
+            nameof(FileSearchResult.DirectoryPath) => PathFilterButton,
+            nameof(FileSearchResult.LastWriteTime) => ModifiedFilterButton,
+            _ => null
+        };
+        if (button is null) return;
+
+        var isActive = selectedValues.Count != values.Count;
+        button.Background = isActive ? Brushes.Gold : null;
+        button.FontWeight = isActive ? FontWeights.Bold : FontWeights.Normal;
+        button.ToolTip = isActive ? "Filter active" : "Filter";
     }
 
     private static string GetColumnValue(FileSearchResult file, string property) => property switch
