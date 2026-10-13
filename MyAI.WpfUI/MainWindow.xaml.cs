@@ -30,7 +30,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        SearchLocationTextBox.Text = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        SearchLocationTextBox.Text = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify) + "\\Downloads";
         StatusTextBlock.Text = "Enter one or more names and extensions, then search.";
     }
 
