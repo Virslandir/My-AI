@@ -14,4 +14,8 @@
     <ProjectReference Include="..\MyAI.Actions\MyAI.Actions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Assets\filter-funnel.png" />
+  </ItemGroup>
+
 </Project>
