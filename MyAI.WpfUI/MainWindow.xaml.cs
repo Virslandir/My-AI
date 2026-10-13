@@ -23,6 +23,9 @@ public partial class MainWindow : Window
     private ICollectionView? _resultsView;
     private string? _sortProperty;
     private ListSortDirection _sortDirection = ListSortDirection.Ascending;
+    private readonly Dictionary<string, List<string>> _columnValues = new();
+    private readonly Dictionary<string, HashSet<string>> _selectedColumnValues = new();
+    private string? _filterProperty;
 
     public MainWindow()
     {
@@ -51,6 +54,8 @@ public partial class MainWindow : Window
             var response = await _searchService.SearchAsync(query, cancellationToken: _searchCancellation.Token);
             _resultsView = CollectionViewSource.GetDefaultView(response.Files);
             _resultsView.SortDescriptions.Add(new SortDescription(nameof(FileSearchResult.Name), ListSortDirection.Ascending));
+            ConfigureColumnFilters(response.Files);
+            _resultsView.Filter = MatchesColumnFilters;
             _sortProperty = nameof(FileSearchResult.Name);
             _sortDirection = ListSortDirection.Ascending;
             ResultsListView.ItemsSource = _resultsView;
@@ -92,6 +97,106 @@ public partial class MainWindow : Window
         _resultsView.SortDescriptions.Clear();
         _resultsView.SortDescriptions.Add(new SortDescription(property, _sortDirection));
     }
+
+    private void FilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+        if (sender is not Button { Tag: string property } button || _resultsView is null) return;
+
+        _filterProperty = property;
+        FilterSearchTextBox.Text = string.Empty;
+        PopulateFilterTree();
+        FilterPopup.PlacementTarget = button;
+        FilterPopup.IsOpen = true;
+        FilterSearchTextBox.Focus();
+    }
+
+    private void FilterSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_filterProperty is not null) PopulateFilterTree();
+    }
+
+    private void ConfigureColumnFilters(IEnumerable<FileSearchResult> files)
+    {
+        foreach (var property in new[] { nameof(FileSearchResult.Name), nameof(FileSearchResult.FullPath), nameof(FileSearchResult.LastWriteTime) })
+        {
+            var values = files.Select(file => GetColumnValue(file, property))
+                .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                .OrderBy(value => value, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+            _columnValues[property] = values;
+            _selectedColumnValues[property] = new HashSet<string>(values, StringComparer.CurrentCultureIgnoreCase);
+        }
+    }
+
+    private bool MatchesColumnFilters(object item)
+    {
+        if (item is not FileSearchResult file) return false;
+
+        return _selectedColumnValues.All(filter => filter.Value.Contains(GetColumnValue(file, filter.Key)));
+    }
+
+    private void PopulateFilterTree()
+    {
+        if (_filterProperty is null || !_columnValues.TryGetValue(_filterProperty, out var values)) return;
+
+        var selectedValues = _selectedColumnValues[_filterProperty];
+        var searchText = FilterSearchTextBox.Text.Trim();
+        var visibleValues = values.Where(value => value.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)).ToList();
+        var rootCheckBox = new CheckBox
+        {
+            Content = "Select all",
+            IsThreeState = true,
+            IsChecked = selectedValues.Count == values.Count ? true : selectedValues.Count == 0 ? false : null,
+            Tag = new FilterOption(_filterProperty, null)
+        };
+        rootCheckBox.Checked += FilterCheckBox_Changed;
+        rootCheckBox.Unchecked += FilterCheckBox_Changed;
+        var root = new TreeViewItem { Header = rootCheckBox, IsExpanded = true };
+
+        foreach (var value in visibleValues)
+        {
+            var valueCheckBox = new CheckBox { Content = value, IsChecked = selectedValues.Contains(value), Tag = new FilterOption(_filterProperty, value) };
+            valueCheckBox.Checked += FilterCheckBox_Changed;
+            valueCheckBox.Unchecked += FilterCheckBox_Changed;
+            root.Items.Add(new TreeViewItem { Header = valueCheckBox });
+        }
+
+        FilterTreeView.Items.Clear();
+        FilterTreeView.Items.Add(root);
+    }
+
+    private void FilterCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (sender is not CheckBox { Tag: FilterOption option } checkBox || !_selectedColumnValues.TryGetValue(option.Property, out var selectedValues)) return;
+
+        if (option.Value is null)
+        {
+            selectedValues.Clear();
+            if (checkBox.IsChecked == true) selectedValues.UnionWith(_columnValues[option.Property]);
+        }
+        else if (checkBox.IsChecked == true)
+        {
+            selectedValues.Add(option.Value);
+        }
+        else
+        {
+            selectedValues.Remove(option.Value);
+        }
+
+        _resultsView?.Refresh();
+        PopulateFilterTree();
+    }
+
+    private static string GetColumnValue(FileSearchResult file, string property) => property switch
+    {
+        nameof(FileSearchResult.Name) => file.Name,
+        nameof(FileSearchResult.FullPath) => file.FullPath,
+        nameof(FileSearchResult.LastWriteTime) => file.LastWriteTime.ToString(),
+        _ => string.Empty
+    };
+
+    private sealed record FilterOption(string Property, string? Value);
 
     private void BrowseButton_Click(object sender, RoutedEventArgs e)
     {
