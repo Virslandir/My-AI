@@ -6,7 +6,7 @@ My AI is a small, local-first Windows file-search utility with a Codex integrati
 
 - Search one or more local folders and their subfolders.
 - Match case-insensitive filename terms and file extensions. Multiple values are alternatives; when both a name and extension are provided, a match must satisfy both criteria.
-- Browse for folders in the desktop app, cancel an active search, and open a result’s location in Windows Explorer.
+- Desktop app: Browse for folders, sort and filter search results, cancel an active search, and open a result’s location in Windows Explorer.
 - Use Codex to search for local files through the `filefinder.search_files` MCP tool.
 - Keep searches local and read-only: the MCP server returns file paths and metadata (such as name, extension, modified time, and size); it does not read file contents or modify files.
 
